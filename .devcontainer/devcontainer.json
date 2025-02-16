@@ -6,7 +6,7 @@
     "codespaces": {
       "openFiles": [
         "README.md",
-        "veroxis.py"
+        "streamlit_app.py"
       ]
     },
     "vscode": {
@@ -33,7 +33,7 @@
   "updateContentCommand": "pip3 install --user -r requirements.txt && pip3 install --user streamlit black pylint isort && echo '✅ Packages installed and Requirements met'",
   
   "postAttachCommand": {
-    "server": "streamlit run veroxis.py --server.enableCORS false --server.enableXsrfProtection false"
+    "server": "streamlit run streamlit_app.py --server.enableCORS false --server.enableXsrfProtection false"
   },
 
   "portsAttributes": {
@@ -45,18 +45,15 @@
 
   "forwardPorts": [8501],
 
-  // Optional features for better development experience
   "features": {
     "ghcr.io/devcontainers/features/git:1": {},
     "ghcr.io/devcontainers/features/github-cli:1": {}
   },
 
-  // Mount local .ssh directory for git operations
   "mounts": [
     "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached"
   ],
 
-  // Environment variables
   "remoteEnv": {
     "PYTHONPATH": "${containerWorkspaceFolder}"
   }
