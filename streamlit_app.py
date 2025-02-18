@@ -1,6 +1,6 @@
-import streamlit as st
 import numpy as np
 import pandas as pd
+import streamlit as st
 
 # Set page configuration
 st.set_page_config(
@@ -33,6 +33,7 @@ st.markdown("""
     }
     </style>
 """, unsafe_allow_html=True)
+
 
 def calculate_channel_effectiveness():
     """
@@ -75,55 +76,60 @@ def calculate_channel_effectiveness():
         }
     }
 
+
 def adjust_channel_costs(target_users, base_sms, base_app, base_edm, base_statement, base_banner):
     """Adjusts channel costs based on target user bands."""
     if target_users <= 100000:
         return base_sms, base_app, base_edm, base_statement, base_banner
     elif target_users <= 200000:
-        return (base_sms * 0.90, base_app * 0.90, base_edm * 0.90, 
+        return (base_sms * 0.90, base_app * 0.90, base_edm * 0.90,
                 base_statement * 0.95, base_banner * 0.80)
     else:
-        return (base_sms * 0.85, base_app * 0.85, base_edm * 0.85, 
+        return (base_sms * 0.85, base_app * 0.85, base_edm * 0.85,
                 base_statement * 0.95, base_banner * 0.75)
+
 
 def calculate_cpa(target_users, total_cost_per_user, base_approval_rate, diminishing_factor, setup_cost, channel_allocations, channel_metrics):
     """
     Calculates the CPA based on weighted channel effectiveness
-    
+
     Parameters:
     - channel_allocations: Dict with percentages for each channel
     - channel_metrics: Dict with engagement rates and weights for each channel
     """
     marketing_cost = (total_cost_per_user * target_users) + setup_cost
-    
+
     # Calculate weighted effectiveness
     total_effectiveness = 0
     for channel, allocation in channel_allocations.items():
         if channel in ['sms', 'app', 'edm']:
             effectiveness = (
-                allocation/100 * 
-                channel_metrics[channel]['weight'] * 
+                allocation/100 *
+                channel_metrics[channel]['weight'] *
                 channel_metrics[channel]['engagement_rate']
             )
             total_effectiveness += effectiveness
-    
+
     # Add statement and banner impact
-    statement_impact = channel_metrics['statement']['weight'] * channel_metrics['statement']['engagement_rate']
-    banner_impact = channel_metrics['banner']['weight'] * channel_metrics['banner']['engagement_rate']
+    statement_impact = channel_metrics['statement']['weight'] * \
+        channel_metrics['statement']['engagement_rate']
+    banner_impact = channel_metrics['banner']['weight'] * \
+        channel_metrics['banner']['engagement_rate']
     total_effectiveness += (statement_impact + banner_impact)
-    
+
     # Calculate adjusted approval rate
     adjusted_approval_rate = base_approval_rate * total_effectiveness
-    
+
     # Calculate approvals
     num_approvals = target_users * adjusted_approval_rate * diminishing_factor
     cpa = marketing_cost / num_approvals if num_approvals > 0 else 0
-    
+
     return marketing_cost, num_approvals, cpa, adjusted_approval_rate, total_effectiveness
+
 
 def main():
     # Header with company logo/name
-    col1, col2, col3 = st.columns([1,2,1])
+    col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.markdown("""
             <h1 style='text-align: center'>
@@ -154,7 +160,7 @@ def main():
             • Investment Products: 1.5% - 3.8%
             • Insurance: 2.4% - 4.9%
             """)
-            
+
             base_approval_rate = st.number_input(
                 "Expected Base Conversion Rate (%)",
                 min_value=0.1,
@@ -163,7 +169,7 @@ def main():
                 step=0.01,
                 help="Your expected conversion rate based on historical data or campaign objectives"
             ) / 100
-            
+
             # Validation for conversion rate
             if base_approval_rate > 0.08:  # Over 8%
                 st.warning("""
@@ -181,7 +187,7 @@ def main():
 
         # Get channel metrics
         channel_metrics = calculate_channel_effectiveness()
-        
+
         st.markdown("### 📱 Channel Allocation")
         st.info("""
             **Channel Impact Guide:**
@@ -191,35 +197,36 @@ def main():
             • SMS: 5% engagement rate - Limited by no-link policy
             • Website Banner: 2% click rate - Supplementary reach
         """)
-        
+
         # Channel allocation with real-time validation
         col1, col2 = st.columns(2)
         with col1:
-            sms_pct = st.slider("SMS Reach (%)", 
-                               min_value=channel_metrics['sms']['min_allocation'],
-                               max_value=channel_metrics['sms']['max_allocation'],
-                               value=channel_metrics['sms']['recommended'],
-                               help=f"Recommended: {channel_metrics['sms']['recommended']}% (Limited impact due to no links)")
-                               
-            edm_pct = st.slider("eDM Reach (%)", 
-                               min_value=channel_metrics['edm']['min_allocation'],
-                               max_value=channel_metrics['edm']['max_allocation'],
-                               value=channel_metrics['edm']['recommended'],
-                               help=f"Recommended: {channel_metrics['edm']['recommended']}% (Good for detailed content)")
-                               
-            app_pct = st.slider("App Notification (%)", 
-                               min_value=channel_metrics['app']['min_allocation'],
-                               max_value=channel_metrics['app']['max_allocation'],
-                               value=channel_metrics['app']['recommended'],
-                               help=f"Recommended: {channel_metrics['app']['recommended']}% (Direct interaction)")
-            
+            sms_pct = st.slider("SMS Reach (%)",
+                                min_value=channel_metrics['sms']['min_allocation'],
+                                max_value=channel_metrics['sms']['max_allocation'],
+                                value=channel_metrics['sms']['recommended'],
+                                help=f"Recommended: {channel_metrics['sms']['recommended']}% (Limited impact due to no links)")
+
+            edm_pct = st.slider("eDM Reach (%)",
+                                min_value=channel_metrics['edm']['min_allocation'],
+                                max_value=channel_metrics['edm']['max_allocation'],
+                                value=channel_metrics['edm']['recommended'],
+                                help=f"Recommended: {channel_metrics['edm']['recommended']}% (Good for detailed content)")
+
+            app_pct = st.slider("App Notification (%)",
+                                min_value=channel_metrics['app']['min_allocation'],
+                                max_value=channel_metrics['app']['max_allocation'],
+                                value=channel_metrics['app']['recommended'],
+                                help=f"Recommended: {channel_metrics['app']['recommended']}% (Direct interaction)")
+
             # Calculate total reach
             total_reach = sms_pct + edm_pct + app_pct
-            
+
             # Display reach status
             st.markdown("#### Channel Mix Effectiveness")
             if total_reach > 100:
-                st.error(f"⚠️ Total reach ({total_reach}%) exceeds 100%. Please adjust your allocation.")
+                st.error(
+                    f"⚠️ Total reach ({total_reach}%) exceeds 100%. Please adjust your allocation.")
             elif total_reach < 100:
                 remaining = 100 - total_reach
                 effectiveness_impact = total_reach/100
@@ -233,27 +240,28 @@ def main():
                 • Or continue with reduced reach if targeting specific segments
                 """)
             else:
-                st.success("✅ Perfect! You are reaching 100% of your target audience.")
-            
+                st.success(
+                    "✅ Perfect! You are reaching 100% of your target audience.")
+
             # Calculate channel mix effectiveness
             channel_allocations = {
                 'sms': sms_pct,
                 'app': app_pct,
                 'edm': edm_pct
             }
-            
+
         with col2:
-            weeks_statement = st.slider("Statement Message (Weeks)", 
-                                      min_value=channel_metrics['statement']['min_weeks'],
-                                      max_value=12,
-                                      value=channel_metrics['statement']['recommended_weeks'],
-                                      help="Recommended: 4 weeks (Highest engagement channel)")
-                                      
-            weeks_banner = st.slider("Website Banner (Weeks)", 
-                                   min_value=channel_metrics['banner']['min_weeks'],
-                                   max_value=12,
-                                   value=channel_metrics['banner']['recommended_weeks'],
-                                   help="Recommended: 3 weeks (Supplementary channel)")
+            weeks_statement = st.slider("Statement Message (Weeks)",
+                                        min_value=channel_metrics['statement']['min_weeks'],
+                                        max_value=12,
+                                        value=channel_metrics['statement']['recommended_weeks'],
+                                        help="Recommended: 4 weeks (Highest engagement channel)")
+
+            weeks_banner = st.slider("Website Banner (Weeks)",
+                                     min_value=channel_metrics['banner']['min_weeks'],
+                                     max_value=12,
+                                     value=channel_metrics['banner']['recommended_weeks'],
+                                     help="Recommended: 3 weeks (Supplementary channel)")
 
         # Setup Cost Display
         st.markdown("### 💰 Setup Cost")
@@ -266,13 +274,13 @@ def main():
     base_edm_cost = 0.20
     base_statement_cost = 4000 * weeks_statement
     base_banner_cost = 750 * weeks_banner
-    
+
     # Adjust costs based on volume
     sms_cost, app_notif_cost, edm_cost, statement_cost, banner_cost = adjust_channel_costs(
         target_users, base_sms_cost, base_app_notif_cost, base_edm_cost,
         base_statement_cost, base_banner_cost
     )
-    
+
     # Calculate total cost per user
     total_cost_per_user = (
         (sms_cost * sms_pct / 100) +
@@ -281,21 +289,21 @@ def main():
         (statement_cost / target_users) +
         (banner_cost / target_users)
     )
-    
+
     # Base approval rate and diminishing factor
     base_approval_rate = 5.49 / 100  # 5.49% base conversion rate
     diminishing_factor = np.interp(target_users, [50000, 500000], [0.5, 1.0])
-    
+
     # Calculate final metrics
     marketing_cost, num_approvals, cpa, adjusted_approval_rate, total_effectiveness = calculate_cpa(
-        target_users, total_cost_per_user, base_approval_rate, diminishing_factor, 
+        target_users, total_cost_per_user, base_approval_rate, diminishing_factor,
         setup_cost, channel_allocations, channel_metrics
     )
 
     # Right column - Results Display
     with right_col:
         st.subheader("📈 Campaign Metrics")
-        
+
         # Key Metrics in Cards
         metrics_col1, metrics_col2, metrics_col3 = st.columns(3)
         with metrics_col1:
@@ -348,7 +356,7 @@ def main():
         # Action Buttons Container
         st.markdown("### 🎯 Actions")
         col1, col2 = st.columns(2)
-        
+
         with col1:
             # Generate detailed report CSV
             report_data = {
@@ -365,20 +373,21 @@ def main():
                     "Total Marketing Cost", "Cost Per User", "Estimated Approvals", "Base Conversion Rate", "Adjusted Conversion Rate"
                 ],
                 "Value": [
-                    f"{target_users:,}", pd.Timestamp.now().strftime('%Y-%m-%d'), f"RM {setup_cost:,.2f}", "VX" + pd.Timestamp.now().strftime('%Y%m%d%H%M'),
+                    f"{target_users:,}", pd.Timestamp.now().strftime(
+                        '%Y-%m-%d'), f"RM {setup_cost:,.2f}", "VX" + pd.Timestamp.now().strftime('%Y%m%d%H%M'),
                     f"{sms_pct}%", f"{edm_pct}%", f"{app_pct}%", f"{weeks_statement} weeks", f"{weeks_banner} weeks",
                     f"RM {sms_cost:.4f}", f"RM {app_notif_cost:.4f}", f"RM {edm_cost:.4f}", f"RM {statement_cost:,.2f}", f"RM {banner_cost:,.2f}",
                     f"RM {marketing_cost:,.2f}", f"RM {total_cost_per_user:.4f}", f"{int(num_approvals):,}", f"{base_approval_rate*100:.2f}%", f"{adjusted_approval_rate*100:.4f}%"
                 ]
             }
-            
+
             st.download_button(
                 label="📥 Download Campaign Report",
                 data=pd.DataFrame(report_data).to_csv(index=False),
                 file_name=f"veroXis_campaign_proposal_{pd.Timestamp.now().strftime('%Y%m%d')}.csv",
                 mime="text/csv"
             )
-        
+
         with col2:
             # Generate formal proposal/invoice CSV
             invoice_items = [
@@ -439,13 +448,23 @@ def main():
                     "Total Cost (RM)": f"{marketing_cost:.2f}"
                 }
             ]
-            
+
             st.download_button(
                 label="📄 Download Proposal/Invoice",
                 data=pd.DataFrame(invoice_items).to_csv(index=False),
                 file_name=f"veroXis_invoice_{pd.Timestamp.now().strftime('%Y%m%d')}.csv",
                 mime="text/csv"
             )
+
+
+# Proprietary Ownership Statement
+st.markdown("""
+    ---
+    **Disclaimer:**
+    This tool is a proprietary technology owned by **Zul Kassim**. 
+    Any access, utilization, or modification of this tool without explicit authorization 
+    from the owner is strictly prohibited. All intellectual property rights remain solely with Zul Kassim.
+""", unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
