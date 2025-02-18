@@ -64,13 +64,13 @@ def calculate_channel_effectiveness():
         'statement': {
             'weight': 0.40,  # Highest impact
             'engagement_rate': 0.35,  # 35% open rate
-            'min_weeks': 2,
+            'min_weeks': 0,
             'recommended_weeks': 4
         },
         'banner': {
             'weight': 0.10,  # Supplementary channel
             'engagement_rate': 0.02,  # 2% click rate
-            'min_weeks': 1,
+            'min_weeks': 0,
             'recommended_weeks': 3
         }
     }
@@ -81,10 +81,10 @@ def adjust_channel_costs(target_users, base_sms, base_app, base_edm, base_statem
         return base_sms, base_app, base_edm, base_statement, base_banner
     elif target_users <= 200000:
         return (base_sms * 0.90, base_app * 0.90, base_edm * 0.90, 
-                base_statement * 0.90, base_banner * 0.90)
+                base_statement * 0.95, base_banner * 0.80)
     else:
         return (base_sms * 0.85, base_app * 0.85, base_edm * 0.85, 
-                base_statement * 0.85, base_banner * 0.85)
+                base_statement * 0.95, base_banner * 0.75)
 
 def calculate_cpa(target_users, total_cost_per_user, base_approval_rate, diminishing_factor, setup_cost, channel_allocations, channel_metrics):
     """
