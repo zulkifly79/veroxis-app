@@ -46,21 +46,21 @@ def calculate_channel_effectiveness():
             'min_allocation': 0,
             'max_allocation': 100,
             'engagement_rate': 0.05,  # 5% engagement rate
-            'recommended': 20
+            'recommended': 0
         },
         'app': {
             'weight': 0.25,  # Better than SMS due to direct interaction
             'min_allocation': 0,
             'max_allocation': 100,
             'engagement_rate': 0.15,  # 15% engagement rate
-            'recommended': 30
+            'recommended': 50
         },
         'edm': {
             'weight': 0.20,  # Good for detailed content
             'min_allocation': 0,
             'max_allocation': 100,
             'engagement_rate': 0.08,  # 8% click rate
-            'recommended': 25
+            'recommended': 50
         },
         'statement': {
             'weight': 0.40,  # Highest impact
