@@ -457,14 +457,28 @@ def main():
             )
 
 
-# Proprietary Ownership Statement
-st.markdown("""
-    ---
-    **Disclaimer:**
-    This tool is a proprietary technology owned by **Zul Kassim**. 
-    Any access, utilization, or modification of this tool without explicit authorization 
-    from the owner is strictly prohibited. All intellectual property rights remain solely with Zul Kassim.
-""", unsafe_allow_html=True)
-
 if __name__ == "__main__":
     main()
+# Ensure the ownership statement appears at the bottom
+footer = st.empty()
+footer.markdown("""
+    <style>
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: white;
+            text-align: center;
+            padding: 10px;
+            font-size: 12px;
+            color: grey;
+            border-top: 1px solid #e0e0e0;
+        }
+    </style>
+    <div class="footer">
+        <b>Disclaimer:</b> This tool is a proprietary technology owned by <b>Zul Kassim</b>.
+        Any access, utilization, or modification of this tool without explicit authorization 
+        from the owner is strictly prohibited. All intellectual property rights remain solely with Zul Kassim.
+    </div>
+""", unsafe_allow_html=True)
