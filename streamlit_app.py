@@ -477,8 +477,8 @@ footer.markdown("""
         }
     </style>
     <div class="footer">
-        <b>Disclaimer:</b> This tool is a proprietary technology owned by <b>Zul Kassim</b>.
+        <b>Disclaimer:</b> This tool is a proprietary technology owned by <b>ASTRA SOOASANA VENTURES (202403280437 (CA0392873-U))</b>.
         Any access, utilization, or modification of this tool without explicit authorization 
-        from the owner is strictly prohibited. All intellectual property rights remain solely with Zul Kassim.
+        from the owner is strictly prohibited. All intellectual property rights remain solely with ASTRA SOOASANA VENTURES.
     </div>
 """, unsafe_allow_html=True)
